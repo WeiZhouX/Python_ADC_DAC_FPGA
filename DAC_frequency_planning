@@ -1,0 +1,565 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
+#
+# FC = 942
+# BW = 35
+# Fs = 3200
+
+# Fc_array = np.array([(758+788)/2, (791+821)/2, (925+960)/2, (1805+1880)/2, (2110+2170)/2, (2620+2690)/2, (3400+3610)/2, (3580+3800)/2])
+
+# Fc_array = np.array([(758+960)/2, (1805+1880)/2, (1900+2000)/2, (2110+2170)/2, (2300+2400)/2, (2515+2675)/2, (3300+3600)/2, (4800+4960)/2, (758+788)/2, (791+821)/2, (925+960)/2])
+# BW = np.array([960-758, 1880-1805, 100, 2170-2110, 2400-2300, 2675-2515, 3600-3300, 4960-4800,(758+788)/2, (791+821)/2, (925+960)/2])
+#
+
+# Fc_array = np.array([(3650+3450)/2, (2690+2496)/2, (2110+2200)/2, (859+894)/2, (698+663)/2])
+# BW = np.array([3650-3450, 2690-2496, 2200-2110, 894-859, 698-663])
+#
+# Carrier_number = 1
+# FC = Fc_array[Carrier_number]
+# BW =1*BW[Carrier_number]
+
+# FC = Fc_array[4]
+# FC = (3400+3800)/2
+# FC = 1930+1995+2110+2200
+# FC = (6400+6800)/2
+# BW = 400
+
+# FC = (3600+2500)/2
+# BW = 1100
+
+FC = 2155
+BW = 1
+Fs = 2457.6
+# Fs = 245.76*12
+# Fs = 5898.24
+# Fs = 7864.32
+# Fs = 9830.4/2
+# Fs = 983.04*10
+# FC = 939.5
+# FC = 1148
+
+# FC = 2200
+# BW = 75
+# Fs = 3200
+
+# FC = (2515+2675)/2
+# BW = 160
+# FC = (4500+4600)/2
+
+
+# FC = (2170+2110)/2
+# BW = (2170-2110)*3
+
+# FC = (1880+1805)/2
+# BW = (1880-1805)*3
+
+# FC =(3450+4050)/2
+# BW = 4050-3450
+# BW = 400
+# FC = 2595
+# Fs = 9830.4
+# Fs = 7864.32
+# FC = 6025
+# BW = 600
+# FC = 3450
+# Fs = 4915.2*2
+# Fs = (4423.68*2+7864.32)/2
+
+# FC = 1997.5
+# BW = 600
+# FC = 3810
+# BW = 600
+# Fs = 4423.68*2
+# Fs = 3686.4
+#Fs = 7864.32
+# Fs = 3932.16
+# Fs = 5898.24
+
+# FC = 2016
+# FC = 3500
+# BW = 800
+# Fs = 2949.12
+# Fs = 3932.16
+# Fs = 4915.2
+# BW = 800
+# FC = (2690+2496)/2
+# BW = 2690-2496
+# FC = (3650+3450)/2
+# BW = 3650-3450
+# Fs = 3686.4*2
+
+# Fs = 3932.16
+# Fs = 7864.32
+# Fs = 6144
+# Fs = 4096
+# Fs = 9830.4
+
+
+
+# BW = 400
+# FC = (3300+3700)/2
+# Fs = 4423.68
+# Fs = 4915.2
+
+# BW = 1
+# FC = (5100+5900)/2
+# FC = 6000
+# Fs = 9000
+
+# BW = 75
+# FC = (1805+1880)/2
+# Fs = 2949.12
+
+
+# Fs = 4423.68/2
+
+# FC = (3700+3980)/2
+# FC = 3000
+# FC = 5423.68
+# FC = 3700
+# FC = 3850
+# FC = 4700
+
+# Fs = 5898.24
+# Fs = 8847.36
+
+# Fs = 9830.4
+# Fs = 3686.4
+# BW = 800
+# # FC = 3570
+# Fs = 4915.2
+
+# FC = 4915.2
+# BW = 1200
+# Fs = 5898.24
+
+#Jabil
+# FC = (1930+1995)/2
+# BW = 20
+# Fs = 4915.2
+
+# FC = 2000
+# FC = 6025
+# BW = 300
+# Fs = 5898.24
+
+# FC = 4915.2
+# BW = 1200
+# Fs = 7864.32
+
+BW_Span = 600
+DUC_Enable = 1
+sinc_curve_enalbe = 1
+Harmonics_analysis_enable = 1
+IMR_filter_depression = 60  # dB, According to the IMR filter frequency response
+
+
+f = np.arange(0.01, 2 * Fs, 0.01 * Fs)
+y = np.arange(-49.99, 0.01, 0.01)
+NyquistZone = np.arange(-49.99, 10.5, 0.5)
+fc_band = np.arange(FC - BW / 2, FC + BW / 2 + 0.01 * BW, 0.1 * BW)
+Amplitude = np.array(
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+x = np.arange(0.001, 2 * Fs, 0.001 * Fs)
+
+fig = plt.figure(figsize=(18, 6))
+plt.ylabel("Amplitude(dB)", fontsize=12)
+plt.xlabel("Frequency(MHz)", fontsize=12)
+plt.xlim(0, 2 * Fs / 2)
+plt.ylim(-50, 10)
+plt.title("DAC Output Spectrum", fontsize=12)
+
+if Fs < 7000:
+    IMR_Enable = 0
+    Mode = 0
+    if FC < Fs / 2:
+        Mix_Mode = 0
+        Nyquist_Zone = 1
+        print('Datapath Mode = 0; Normal mode; Nyquist Zone 1; Full Nyquist DUC; IMRx2 OFF')
+        FC_Amplitude_Sinc = 20 * np.log10(abs(np.sinc(FC / Fs)))
+        y_FC = Amplitude + FC_Amplitude_Sinc  # dB
+        plt.plot((FC - BW / 2) * y / y, y + FC_Amplitude_Sinc, color='blue')
+        plt.plot((FC + BW / 2) * y / y, y + FC_Amplitude_Sinc, color='blue')
+        plt.plot(fc_band, y_FC, color='blue', label='RF Signal Band')
+        plt.text(FC, FC_Amplitude_Sinc, '%.2f'% FC_Amplitude_Sinc, ha='center', va='bottom', fontsize=10.5)
+        print('Carrier frequency amplitude = ', FC_Amplitude_Sinc, 'dB')
+
+        Image_Band_1 = np.arange(Fs - (FC + BW / 2), Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+        center_Image_Band_1 = (np.min(Image_Band_1) + np.max(Image_Band_1)) / 2
+        Image_Band_1_Amplitude_Sinc = 20 * np.log10(abs(np.sinc(center_Image_Band_1 / Fs)))
+        print('Image center frequency in the 2nd Nyquist Zone = ', center_Image_Band_1, 'MHz,', 'Amplitude = ',
+              Image_Band_1_Amplitude_Sinc, 'dB')
+
+        Image_Band_2 = np.arange(Fs + (FC - BW / 2), Fs + (FC + BW / 2) + 0.01 * BW, 0.1 * BW)
+        center_Image_Band_2 = (np.min(Image_Band_2) + np.max(Image_Band_2)) / 2
+        Image_Band_2_Amplitude_Sinc = 20 * np.log10(abs(np.sinc(center_Image_Band_2 / Fs)))
+        print('Image center frequency in the 3rd Nyquist Zone = ', center_Image_Band_2, 'MHz,', 'Amplitude = ',
+              Image_Band_2_Amplitude_Sinc, 'dB')
+
+        Image_Band_3 = np.arange(2 * Fs - (FC + BW / 2), 2 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+        center_Image_Band_3 = (np.min(Image_Band_3) + np.max(Image_Band_3)) / 2
+        Image_Band_3_Amplitude_Sinc = 20 * np.log10(abs(np.sinc(center_Image_Band_3 / Fs)))
+        print('Image center frequency in the 4th Nyquist Zone = ', center_Image_Band_3, 'MHz,', 'Amplitude = ',
+              Image_Band_3_Amplitude_Sinc, 'dB')
+
+    elif Fs / 2 < FC < Fs:
+        Mix_mode = 1
+        Nyquist_Zone = 2
+        print('Datapath Mode = 0; Mix_ mode; Nyquist Zone 2; Full Nyquist DUC; IMRx2 OFF')
+        FC_Amplitude_Sinc = 20 * np.log10((np.sinc(FC / Fs / 2)) ** 2 * np.pi * (FC / Fs / 2))
+        y_FC = Amplitude + FC_Amplitude_Sinc  # dB
+        plt.plot((FC - BW / 2) * y / y, y + FC_Amplitude_Sinc, color='blue')
+        plt.plot((FC + BW / 2) * y / y, y + FC_Amplitude_Sinc, color='blue')
+        plt.plot(fc_band, y_FC, color='blue', label='RF Signal Band')
+        plt.text(FC, FC_Amplitude_Sinc, '%.2f'% FC_Amplitude_Sinc, ha='center', va='bottom', fontsize=10.5)
+        print('Carrier frequency amplitude = ', FC_Amplitude_Sinc, 'dB')
+
+        Image_Band_1 = np.arange(Fs - (FC + BW / 2), Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+        center_Image_Band_1 = (np.min(Image_Band_1) + np.max(Image_Band_1)) / 2
+        Image_Band_1_Amplitude_Sinc = 20 * np.log10(
+            (np.sinc(center_Image_Band_1 / Fs / 2)) ** 2 * np.pi * (center_Image_Band_1 / Fs / 2))
+        print('Image center frequency in the 1st Nyquist Zone = ', center_Image_Band_1, 'MHz,', 'Amplitude = ',
+              Image_Band_1_Amplitude_Sinc, 'dB')
+
+        Image_Band_2 = np.arange(Fs + (FC - BW / 2), Fs + (FC + BW / 2) + 0.01 * BW, 0.1 * BW)
+        center_Image_Band_2 = (np.min(Image_Band_2) + np.max(Image_Band_2)) / 2
+        Image_Band_2_Amplitude_Sinc = 20 * np.log10(
+            (np.sinc(center_Image_Band_2 / Fs / 2)) ** 2 * np.pi * (center_Image_Band_2 / Fs / 2))
+        print('Image center frequency in the 3rd Nyquist Zone = ', center_Image_Band_2, 'MHz,', 'Amplitude = ',
+              Image_Band_2_Amplitude_Sinc, 'dB')
+
+        Image_Band_3 = np.arange(2 * Fs - (FC + BW / 2), 2 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+        center_Image_Band_3 = (np.min(Image_Band_3) + np.max(Image_Band_3)) / 2
+        Image_Band_3_Amplitude_Sinc = 20 * np.log10(
+            (np.sinc(center_Image_Band_3 / Fs / 2)) ** 2 * np.pi * (center_Image_Band_3 / Fs / 2))
+        print('Image center frequency in the 4th Nyquist Zone = ', center_Image_Band_3, 'MHz,', 'Amplitude = ',
+              Image_Band_3_Amplitude_Sinc, 'dB')
+
+    else:
+        print('Warning: Target Output frequency > Fs')
+
+    if BW<1/50*Fs:
+        my_xticks = np.array([Fs / 2, Fs, 3 * Fs / 2, 2 * Fs, center_Image_Band_1, center_Image_Band_2, center_Image_Band_3, FC])
+    else:
+        my_xticks = np.array([Fs / 2, Fs, 3 * Fs / 2, 2 * Fs, np.min(Image_Band_1), np.max(Image_Band_1),
+                              np.min(Image_Band_2), np.max(Image_Band_2), np.min(Image_Band_3), np.max(Image_Band_3),
+                              FC - BW / 2, FC + BW / 2])
+
+
+    my_xticks_round = np.round(my_xticks, decimals=2)
+    print(my_xticks_round)
+    plt.xticks(my_xticks)
+    plt.xticks(rotation=45)
+    plt.gca().xaxis.set_major_formatter(ticker.FormatStrFormatter('%.2f'))
+
+elif 7000 < Fs < 10000:
+    IMR_Enable = 1
+    plt.plot(0.2 * Fs * NyquistZone / NyquistZone, NyquistZone, color='gray', label='AVOID BAND')
+    plt.plot(0.3 * Fs * NyquistZone / NyquistZone, NyquistZone, color='gray')
+    plt.plot(0.45 * Fs * NyquistZone / NyquistZone, NyquistZone, color='gray')
+    plt.plot(0.55 * Fs * NyquistZone / NyquistZone, NyquistZone, color='gray')
+    plt.plot(0.7 * Fs * NyquistZone / NyquistZone, NyquistZone, color='gray')
+    plt.plot(0.8 * Fs * NyquistZone / NyquistZone, NyquistZone, color='gray')
+    plt.plot(0.95 * Fs * NyquistZone / NyquistZone, NyquistZone, color='gray')
+    plt.plot(1.2 * Fs * NyquistZone / NyquistZone, NyquistZone, color='gray')
+    plt.plot(1.3 * Fs * NyquistZone / NyquistZone, NyquistZone, color='gray')
+    plt.plot(1.45 * Fs * NyquistZone / NyquistZone, NyquistZone, color='gray')
+    plt.plot(1.55 * Fs * NyquistZone / NyquistZone, NyquistZone, color='gray')
+    plt.plot(1.7 * Fs * NyquistZone / NyquistZone, NyquistZone, color='gray')
+    plt.plot(1.8 * Fs * NyquistZone / NyquistZone, NyquistZone, color='gray')
+    plt.plot(1.95 * Fs * NyquistZone / NyquistZone, NyquistZone, color='gray')
+
+    xf1 = x[np.where((x > 0.2 * Fs) & (x < 0.3 * Fs))]
+    plt.fill_between(xf1, -50, 10, color='black', alpha=0.15)
+    xf2 = x[np.where((x > 0.45 * Fs) & (x < 0.55 * Fs))]
+    plt.fill_between(xf2, -50, 10, color='black', alpha=0.15)
+    xf3 = x[np.where((x > 0.7 * Fs) & (x < 0.8 * Fs))]
+    plt.fill_between(xf3, -50, 10, color='black', alpha=0.15)
+    xf4 = x[np.where((x > 0.95 * Fs) & (x < Fs))]
+    plt.fill_between(xf4, -50, 10, color='black', alpha=0.15)
+    xf5 = x[np.where((x > 1.2 * Fs) & (x < 1.3 * Fs))]
+    plt.fill_between(xf5, -50, 10, color='black', alpha=0.15)
+    xf6 = x[np.where((x > 1.45 * Fs) & (x < 1.55 * Fs))]
+    plt.fill_between(xf6, -50, 10, color='black', alpha=0.15)
+    xf7 = x[np.where((x > 1.7 * Fs) & (x < 1.8 * Fs))]
+    plt.fill_between(xf7, -50, 10, color='black', alpha=0.15)
+    xf8 = x[np.where((x > 1.95 * Fs) & (x < 2*Fs))]
+    plt.fill_between(xf8, -50, 10, color='black', alpha=0.15)
+
+    if FC + BW / 2 < 0.2 * Fs:
+        print('Datapath Mode = 1; Nyquist Zone 1; IMR Low-pass; Usable Bandwidth (0~0.2Fs)=', 0, '~', 0.2 * Fs, 'MHz')
+    elif 0.3 * Fs < FC - BW / 2 and FC + BW / 2 < 0.45 * Fs:
+        print('Datapath Mode = 2; Nyquist Zone 1; IMR High-pass; Usable Bandwidth (0.3*Fs~0.45*Fs)=', 0.3 * Fs, '~',
+              0.45 * Fs, 'MHz')
+    elif 0.55 * Fs < FC - BW / 2 and FC + BW / 2 < 0.7 * Fs:
+        print('Datapath Mode = 2; Nyquist Zone 2; IMR High-pass; Usable Bandwidth (0.55*Fs~0.7*Fs)=', 0.55 * Fs, '~',
+              0.7 * Fs, 'MHz')
+    elif 0.8 * Fs < FC - BW / 2 and FC + BW / 2 < 0.95 * Fs:
+        print('Datapath Mode = 1; Nyquist Zone 2; IMR Low-pass; Usable Bandwidth (0.8 * Fs~0.95 * Fs)=', 0.8 * Fs, '~',
+              0.95 * Fs, 'MHz')
+    else:
+        print('Warning: The band is in AVOID BAND')
+        plt.title("DAC Output Spectrum; Warning: The target band is in AVOID BAND")
+
+    if FC < 0.5 * Fs:
+        Nyquist_Zone = 1
+        FC_Amplitude_Sinc = 20 * np.log10(abs(np.sinc(FC / Fs)))
+        y_FC = Amplitude + FC_Amplitude_Sinc  # dB
+        plt.plot((FC - BW / 2) * y / y, y + FC_Amplitude_Sinc, color='blue')
+        plt.plot((FC + BW / 2) * y / y, y + FC_Amplitude_Sinc, color='blue')
+        plt.plot(fc_band, y_FC, color='blue', label='RF Signal Band')
+        plt.text(FC, FC_Amplitude_Sinc, '%.2f'% FC_Amplitude_Sinc, ha='center', va='bottom', fontsize=10.5)
+        print('Carrier frequency amplitude = ', FC_Amplitude_Sinc, 'dB')
+
+        Image_Band_1 = np.arange(Fs - (FC + BW / 2), Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+        center_Image_Band_1 = (np.min(Image_Band_1) + np.max(Image_Band_1)) / 2
+        Image_Band_1_Amplitude_Sinc = 20 * np.log10(abs(np.sinc(center_Image_Band_1 / Fs)))
+        print('Image center frequency in the 2nd Nyquist Zone = ', center_Image_Band_1, 'MHz,', 'Amplitude = ',
+              Image_Band_1_Amplitude_Sinc, 'dB')
+
+        Image_Band_2 = np.arange(Fs + (FC - BW / 2), Fs + (FC + BW / 2) + 0.01 * BW, 0.1 * BW)
+        center_Image_Band_2 = (np.min(Image_Band_2) + np.max(Image_Band_2)) / 2
+        Image_Band_2_Amplitude_Sinc = 20 * np.log10(abs(np.sinc(center_Image_Band_2 / Fs)))
+        print('Image center frequency in the 3rd Nyquist Zone = ', center_Image_Band_2, 'MHz,', 'Amplitude = ',
+              Image_Band_2_Amplitude_Sinc, 'dB')
+
+        Image_Band_3 = np.arange(2 * Fs - (FC + BW / 2), 2 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+        center_Image_Band_3 = (np.min(Image_Band_3) + np.max(Image_Band_3)) / 2
+        Image_Band_3_Amplitude_Sinc = 20 * np.log10(abs(np.sinc(center_Image_Band_3 / Fs)))
+        print('Image center frequency in the 4th Nyquist Zone = ', center_Image_Band_3, 'MHz,', 'Amplitude = ',
+              Image_Band_3_Amplitude_Sinc, 'dB')
+
+        if 0.3*Fs > FC + BW / 2 > 0.2*Fs or 0.2*Fs < FC - BW / 2 < 0.3*Fs:
+            IMR_Image_Band_1 = np.arange(0.5 * Fs - (FC + BW / 2), 0.5 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+            center_IMR_Image_Band_1 = (np.min(IMR_Image_Band_1) + np.max(IMR_Image_Band_1)) / 2
+            IMR_Image_Band_1_Amplitude = FC_Amplitude_Sinc - IMR_filter_depression
+            plt.plot(np.min(IMR_Image_Band_1) * y / y, y+IMR_Image_Band_1_Amplitude, color='violet', linestyle='--', label='IMR images')
+            plt.plot(np.max(IMR_Image_Band_1) * y / y, y+IMR_Image_Band_1_Amplitude, color='violet', linestyle='--')
+            plt.plot(IMR_Image_Band_1, Amplitude+IMR_Image_Band_1_Amplitude, color='violet', linestyle='--')
+            #IMR's images are the images'image
+            plt.plot(np.min(1.5*Fs - Image_Band_1) * y / y, y + Image_Band_1_Amplitude_Sinc-IMR_filter_depression, color='violet', linestyle='--')
+            plt.plot(np.max(1.5*Fs - Image_Band_1) * y / y, y + Image_Band_1_Amplitude_Sinc-IMR_filter_depression, color='violet', linestyle='--')
+            plt.plot(1.5*Fs - Image_Band_1, Amplitude + Image_Band_1_Amplitude_Sinc-IMR_filter_depression, color='violet', linestyle='--')
+            plt.plot(np.min(2.5*Fs - Image_Band_2) * y / y, y + Image_Band_2_Amplitude_Sinc-IMR_filter_depression, color='violet', linestyle='--')
+            plt.plot(np.max(2.5*Fs - Image_Band_2) * y / y, y + Image_Band_2_Amplitude_Sinc-IMR_filter_depression, color='violet', linestyle='--')
+            plt.plot(2.5*Fs - Image_Band_2, Amplitude + Image_Band_2_Amplitude_Sinc-IMR_filter_depression, color='violet', linestyle='--')
+            plt.plot(np.min(3.5*Fs - Image_Band_3) * y / y, y + Image_Band_3_Amplitude_Sinc-IMR_filter_depression, color='violet', linestyle='--')
+            plt.plot(np.max(3.5*Fs - Image_Band_3) * y / y, y + Image_Band_3_Amplitude_Sinc-IMR_filter_depression, color='violet', linestyle='--')
+            plt.plot(3.5*Fs - Image_Band_3, Amplitude + Image_Band_3_Amplitude_Sinc-IMR_filter_depression, color='violet', linestyle='--')
+
+    elif Fs / 2 <= FC < Fs:
+        Nyquist_Zone = 2
+        FC_Amplitude_Sinc = 20 * np.log10((np.sinc(FC / Fs / 2)) ** 2 * np.pi * (FC / Fs / 2))
+        y_FC = Amplitude + FC_Amplitude_Sinc  # dB
+        plt.plot((FC - BW / 2) * y / y, y + FC_Amplitude_Sinc, color='blue')
+        plt.plot((FC + BW / 2) * y / y, y + FC_Amplitude_Sinc, color='blue')
+        plt.plot(fc_band, y_FC, color='blue', label='RF Signal Band')
+        plt.text(FC, FC_Amplitude_Sinc, '%.00f'% FC_Amplitude_Sinc, ha='center', va='bottom', fontsize=10.5)
+        print('Carrier frequency amplitude = ', FC_Amplitude_Sinc, 'dB')
+
+        Image_Band_1 = np.arange(Fs - (FC + BW / 2), Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+        center_Image_Band_1 = (np.min(Image_Band_1) + np.max(Image_Band_1)) / 2
+        Image_Band_1_Amplitude_Sinc = 20 * np.log10(
+            (np.sinc(center_Image_Band_1 / Fs / 2)) ** 2 * np.pi * (center_Image_Band_1 / Fs / 2))
+        print('Image center frequency in the 1st Nyquist Zone = ', center_Image_Band_1, 'MHz,', 'Amplitude = ',
+              Image_Band_1_Amplitude_Sinc, 'dB')
+
+        Image_Band_2 = np.arange(2 * Fs - (FC + BW / 2), 2 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+        center_Image_Band_2 = (np.min(Image_Band_2) + np.max(Image_Band_2)) / 2
+        Image_Band_2_Amplitude_Sinc = 20 * np.log10(
+            (np.sinc(center_Image_Band_2 / Fs / 2)) ** 2 * np.pi * (center_Image_Band_2 / Fs / 2))
+        print('Image center frequency in the 3rd Nyquist Zone = ', center_Image_Band_2, 'MHz,', 'Amplitude = ',
+              Image_Band_2_Amplitude_Sinc, 'dB')
+
+        Image_Band_3 = np.arange(Fs + (FC - BW / 2), Fs + (FC + BW / 2) + 0.01 * BW, 0.1 * BW)
+        center_Image_Band_3 = (np.min(Image_Band_3) + np.max(Image_Band_3)) / 2
+        Image_Band_3_Amplitude_Sinc = 20 * np.log10(
+            (np.sinc(center_Image_Band_3 / Fs / 2)) ** 2 * np.pi * (center_Image_Band_3 / Fs / 2))
+        print('Image center frequency in the 4th Nyquist Zone = ', center_Image_Band_3, 'MHz,', 'Amplitude = ',
+              Image_Band_3_Amplitude_Sinc, 'dB')
+
+        if 0.8*Fs > FC + BW / 2 > 0.7*Fs or 0.7*Fs < FC - BW / 2 < 0.8*Fs:
+            IMR_Image_Band_1 = np.arange(1.5 * Fs - (FC + BW / 2), 1.5 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+            center_IMR_Image_Band_1 = (np.min(IMR_Image_Band_1) + np.max(IMR_Image_Band_1)) / 2
+            IMR_Image_Band_1_Amplitude = FC_Amplitude_Sinc - IMR_filter_depression
+            plt.plot(np.min(IMR_Image_Band_1) * y / y, y+IMR_Image_Band_1_Amplitude, color='violet', linestyle='--', label='IMR images')
+            plt.plot(np.max(IMR_Image_Band_1) * y / y, y+IMR_Image_Band_1_Amplitude, color='violet', linestyle='--')
+            plt.plot(IMR_Image_Band_1, Amplitude+IMR_Image_Band_1_Amplitude, color='violet', linestyle='--')
+            #IMR's images are the images'image
+            plt.plot(np.min(0.5*Fs - Image_Band_1) * y / y, y + Image_Band_1_Amplitude_Sinc-IMR_filter_depression, color='violet', linestyle='--')
+            plt.plot(np.max(0.5*Fs - Image_Band_1) * y / y, y + Image_Band_1_Amplitude_Sinc-IMR_filter_depression, color='violet', linestyle='--')
+            plt.plot(0.5*Fs - Image_Band_1, Amplitude + Image_Band_1_Amplitude_Sinc-IMR_filter_depression, color='violet', linestyle='--')
+            plt.plot(np.min(2.5*Fs - Image_Band_2) * y / y, y + Image_Band_2_Amplitude_Sinc-IMR_filter_depression, color='violet', linestyle='--')
+            plt.plot(np.max(2.5*Fs - Image_Band_2) * y / y, y + Image_Band_2_Amplitude_Sinc-IMR_filter_depression, color='violet', linestyle='--')
+            plt.plot(2.5*Fs - Image_Band_2, Amplitude + Image_Band_2_Amplitude_Sinc-IMR_filter_depression, color='violet', linestyle='--')
+            plt.plot(np.min(3.5*Fs - Image_Band_3) * y / y, y + Image_Band_3_Amplitude_Sinc-IMR_filter_depression, color='violet', linestyle='--')
+            plt.plot(np.max(3.5*Fs - Image_Band_3) * y / y, y + Image_Band_3_Amplitude_Sinc-IMR_filter_depression, color='violet', linestyle='--')
+            plt.plot(3.5*Fs - Image_Band_3, Amplitude + Image_Band_3_Amplitude_Sinc-IMR_filter_depression, color='violet', linestyle='--')
+
+
+    else:
+        print('Warning: FC > Fs')
+
+    if BW <1/50*Fs:
+        my_xticks = np.array([Fs / 2, Fs, 3 * Fs / 2, 2 * Fs, center_Image_Band_1, center_Image_Band_2, center_Image_Band_3,
+                              FC, 0.2 * Fs, 0.3 * Fs, 0.45 * Fs, 0.55 * Fs, 0.7 * Fs, 0.8 * Fs, 0.95 * Fs, 1.2 * Fs,
+                              1.3 * Fs, 1.45 * Fs, 1.55 * Fs, 1.7 * Fs, 1.8 * Fs, 1.95 * Fs])
+    else:
+        my_xticks = np.array([Fs / 2, Fs, 3 * Fs / 2, 2 * Fs, np.min(Image_Band_1), np.max(Image_Band_1),
+                              np.min (Image_Band_2), np.max (Image_Band_2), np.min (Image_Band_3),np.max (Image_Band_3),
+                              FC - BW / 2, FC + BW / 2, 0.2 * Fs, 0.3 * Fs, 0.45 * Fs, 0.55 * Fs, 0.7 * Fs, 0.8 * Fs,
+                              0.95 * Fs, 1.2 * Fs, 1.3 * Fs, 1.45 * Fs, 1.55 * Fs, 1.7 * Fs, 1.8 * Fs, 1.95 * Fs])
+
+
+    my_xticks_round = np.around(my_xticks, decimals=2)
+    print(my_xticks_round)
+    plt.xticks(my_xticks_round)
+    plt.xticks(rotation=45)
+    plt.gca ().xaxis.set_major_formatter (ticker.FormatStrFormatter ('%.2f'))
+
+else:
+    print('Warning: Fs > 10000MHz is not available for RFSoC Gen3')
+
+plt.plot(Fs / 2 * NyquistZone / NyquistZone, NyquistZone, color='gold', linestyle='-.')
+plt.plot(2 * Fs / 2 * NyquistZone / NyquistZone, NyquistZone, color='brown', linestyle='-.', label='Sampling Clock')
+plt.plot(3 * Fs / 2 * NyquistZone / NyquistZone, NyquistZone, color='gold', linestyle='-.')
+
+# plot images
+plt.plot(np.min(Image_Band_1) * y / y, y + Image_Band_1_Amplitude_Sinc, color='red', linestyle='--', )
+plt.plot(np.max(Image_Band_1) * y / y, y + Image_Band_1_Amplitude_Sinc, color='red', linestyle='--')
+plt.plot(Image_Band_1, Amplitude + Image_Band_1_Amplitude_Sinc, color='red', linestyle='--', label='Images Band')
+plt.text(center_Image_Band_1, Image_Band_1_Amplitude_Sinc, '%.2f' % Image_Band_1_Amplitude_Sinc, ha='center', va='bottom', fontsize=10.5)
+plt.plot(np.min(Image_Band_2) * y / y, y + Image_Band_2_Amplitude_Sinc, color='red', linestyle='--', )
+plt.plot(np.max(Image_Band_2) * y / y, y + Image_Band_2_Amplitude_Sinc, color='red', linestyle='--')
+plt.plot(Image_Band_2, Amplitude + Image_Band_2_Amplitude_Sinc, color='red', linestyle='--')
+plt.text(center_Image_Band_2, Image_Band_2_Amplitude_Sinc, '%.2f' % Image_Band_2_Amplitude_Sinc, ha='center', va='bottom', fontsize=10.5)
+plt.plot(np.min(Image_Band_3) * y / y, y + Image_Band_3_Amplitude_Sinc, color='red', linestyle='--', )
+plt.plot(np.max(Image_Band_3) * y / y, y + Image_Band_3_Amplitude_Sinc, color='red', linestyle='--')
+plt.plot(Image_Band_3, Amplitude + Image_Band_3_Amplitude_Sinc, color='red', linestyle='--')
+plt.text(center_Image_Band_3, Image_Band_3_Amplitude_Sinc, '%.2f' % Image_Band_3_Amplitude_Sinc, ha='center', va='bottom', fontsize=10.5)
+
+if sinc_curve_enalbe == 1:
+    if Nyquist_Zone == 1:
+        Normal_mode_magnitude = 20 * np.log10(abs(np.sinc(x/Fs)))
+        plt.plot(x, Normal_mode_magnitude, color='lightslategray', linestyle=':', label='SINC Roll-off')
+    if Nyquist_Zone == 2:
+        Mix_mode_magnitude = 20 * np.log10((np.sinc(x / Fs / 2)) ** 2 * np.pi * (x / Fs / 2))
+        plt.plot(x, Mix_mode_magnitude, color='lightslategray', linestyle=':', label='SINC Roll-off')
+
+plt.legend(loc='upper right', fontsize=10)  # label location
+
+if Harmonics_analysis_enable == 1:
+    ax2 = plt.twinx()
+    ax2.set_ylim(-50, 10)
+    ax2.set_yticks([-45, -40])
+    ax2.set_yticklabels(['HD2', 'HD3'])
+    ax2.set_ylabel('Harmonics Location', fontsize=12)
+    HD2 = np.arange(2*(FC - BW / 2), 2*(FC + BW / 2) + 0.01 * BW, 0.4 * BW)
+    HD2_Fs_1m1 = np.arange(2*(FC - BW / 2)-Fs, 2*(FC + BW / 2)-Fs + 0.01 * BW, 0.4 * BW)
+    HD2_Fs_m11 = np.arange(Fs-2*(FC + BW / 2), Fs-2*(FC - BW / 2) + 0.01 * BW, 0.4 * BW)
+    HD2_Fs_m12 = np.arange(2*Fs - 2 * (FC + BW / 2), 2*Fs - 2 * (FC - BW / 2) + 0.01 * BW, 0.4*BW)
+    HD2_Fs_11 = np.arange(2*(FC - BW / 2) + Fs, 2*(FC + BW / 2) + Fs + 0.01 * BW, 0.4 * BW)
+    HD2_Fs_m13 = np.arange(3*Fs - 2 * (FC + BW / 2), 3*Fs - 2 * (FC - BW / 2) + 0.01 * BW, 0.4*BW)
+    ax2.plot(HD2, -45*np.ones(len(HD2)), color='lightseagreen', marker='o', linestyle='--', label='HD2')
+    ax2.plot(HD2_Fs_1m1, -45*np.ones(len(HD2_Fs_1m1)), color='lightseagreen', marker='o', linestyle='--')
+    ax2.plot(HD2_Fs_m11, -45*np.ones(len(HD2_Fs_m11)), color='lightseagreen', marker='o', linestyle='--')
+    ax2.plot(HD2_Fs_11, -45*np.ones(len(HD2_Fs_11)), color='lightseagreen', marker='o', linestyle='--')
+    ax2.plot(HD2_Fs_m12, -45*np.ones(len(HD2_Fs_m12)), color='lightseagreen', marker='o', linestyle='--')
+    ax2.plot(HD2_Fs_m13, -45*np.ones(len(HD2_Fs_m13)), color='lightseagreen', marker='o', linestyle='--')
+    if 0 < (np.min(HD2) + np.max(HD2)) / 2 < 2 * Fs:
+        ax2.text((np.min(HD2) + np.max(HD2)) / 2, -45, 'HD2', ha='center', va='bottom', fontsize=10)
+        if -1*BW_Span < (np.min(HD2) + np.max(HD2)) / 2 - FC < BW_Span:
+            print('center of HD2 frequency is', (np.min(HD2) + np.max(HD2)) / 2, 'MHz, ', 'Offset FC is', (np.min(HD2) + np.max(HD2))/2-FC, 'MHz')
+
+    if 0 < (np.min(HD2_Fs_1m1) + np.max(HD2_Fs_1m1)) / 2 < 2 * Fs:
+        ax2.text((np.min(HD2_Fs_1m1) + np.max(HD2_Fs_1m1)) / 2, -45, 'HD2-Fs', ha='center', va='bottom', fontsize=10)
+        if -1*BW_Span < (np.min(HD2_Fs_1m1) + np.max(HD2_Fs_1m1)) / 2 - FC < BW_Span:
+            print('center of HD2-Fs frequency is', (np.min(HD2_Fs_1m1) + np.max(HD2_Fs_1m1)) / 2, 'MHz, ','Offset FC is', (np.min(HD2_Fs_1m1) + np.max(HD2_Fs_1m1)) / 2 - FC, 'MHz')
+
+    if 0 < (np.min(HD2_Fs_m11) + np.max(HD2_Fs_m11)) / 2 < 2 * Fs:
+        ax2.text((np.min(HD2_Fs_m11) + np.max(HD2_Fs_m11)) / 2, -45, 'Fs-HD2', ha='center', va='bottom', fontsize=10)
+        if -1*BW_Span < (np.min(HD2_Fs_m11) + np.max(HD2_Fs_m11)) / 2 - FC < BW_Span:
+            print('center of Fs-HD2 frequency is',(np.min(HD2_Fs_m11) + np.max(HD2_Fs_m11)) / 2, 'MHz, ', 'Offset FC is', (np.min(HD2_Fs_m11) + np.max(HD2_Fs_m11)) / 2 - FC, 'MHz')
+
+    if 0 < (np.min(HD2_Fs_11) + np.max(HD2_Fs_11)) / 2 < 2 * Fs:
+        ax2.text((np.min(HD2_Fs_11) + np.max(HD2_Fs_11)) / 2, -45, 'Fs+HD2', ha='center', va='bottom', fontsize=10)
+        if -1 * BW_Span < (np.min(HD2_Fs_11) + np.max(HD2_Fs_11)) / 2 - FC < BW_Span:
+            print('center of Fs+HD2 frequency is', (np.min(HD2_Fs_11) + np.max(HD2_Fs_11)) / 2, 'MHz, ', 'Offset FC is', (np.min(HD2_Fs_11) + np.max(HD2_Fs_11)) / 2 - FC, 'MHz')
+
+    if 0 < (np.min(HD2_Fs_m12) + np.max(HD2_Fs_m12)) / 2 < 2 * Fs:
+        ax2.text((np.min(HD2_Fs_m12) + np.max(HD2_Fs_m12)) / 2, -45, '2Fs-HD2', ha='center', va='bottom', fontsize=10)
+        if -1 * BW_Span < (np.min(HD2_Fs_m12) + np.max(HD2_Fs_m12)) / 2 - FC < BW_Span:
+            print('center of 2Fs-HD2 frequency is', (np.min(HD2_Fs_m12)+np.max(HD2_Fs_m12))/2,'MHz, ','Offset FC is',(np.min(HD2_Fs_m12) + np.max(HD2_Fs_m12)) / 2 - FC, 'MHz')
+
+    if 0 < (np.min(HD2_Fs_m13) + np.max(HD2_Fs_m13)) / 2 < 2 * Fs:
+        ax2.text((np.min(HD2_Fs_m13) + np.max(HD2_Fs_m13)) / 2, -45, '3Fs-HD2', ha='center', va='bottom', fontsize=10)
+        if -1 * BW_Span < (np.min(HD2_Fs_m13) + np.max(HD2_Fs_m13)) / 2 - FC < BW_Span:
+            print('center of 3Fs-HD2 frequency is', (np.min(HD2_Fs_m13)+np.max(HD2_Fs_m13))/2, 'MHz,', 'Offset FC is', (np.min(HD2_Fs_m13) + np.max(HD2_Fs_m13)) / 2 - FC, 'MHz')
+
+    HD3 = np.arange(3*(FC - BW / 2), 3*(FC + BW / 2) + 0.01 * BW, 0.5 * BW)
+    HD3_Fs_11 = np.arange(3*(FC - BW / 2) + Fs, 3*(FC + BW / 2) + Fs + 0.01 * BW, 0.5 * BW)
+    HD3_Fs_1m1 = np.arange(3*(FC - BW / 2)-Fs, 3*(FC + BW / 2)-Fs + 0.01 * BW, 0.5 * BW)
+    HD3_Fs_1m2 = np.arange(3 * (FC - BW / 2) - 2*Fs, 3 * (FC + BW / 2) - 2*Fs + 0.01 * BW, 0.5 * BW)
+    HD3_Fs_m11 = np.arange(Fs-3*(FC + BW / 2), Fs-3*(FC - BW / 2) + 0.01 * BW, 0.5 * BW)
+    HD3_Fs_m12 = np.arange(2*Fs - 3 * (FC + BW / 2), 2*Fs - 3*(FC - BW / 2) + 0.01 * BW, 0.5 * BW)
+    HD3_Fs_m13 = np.arange(3*Fs - 3 * (FC + BW / 2), 3*Fs - 3 * (FC - BW / 2) + 0.01 * BW, 0.5 * BW)
+    HD3_Fs_m14 = np.arange(4 * Fs - 3 * (FC + BW / 2), 4 * Fs - 3 * (FC - BW / 2) + 0.01 * BW, 0.5 * BW)
+    ax2.plot(HD3, -40*np.ones(len(HD3)), color='lawngreen', marker='^', linestyle='--', label='HD3')
+    ax2.plot(HD3_Fs_11, -40*np.ones(len(HD3_Fs_11)), color='lawngreen', marker='^', linestyle='--')
+    ax2.plot(HD3_Fs_1m1, -40*np.ones(len(HD3_Fs_1m1)), color='lawngreen', marker='^', linestyle='--')
+    ax2.plot(HD3_Fs_1m2, -40*np.ones(len(HD3_Fs_1m2)), color='lawngreen', marker='^', linestyle='--')
+    ax2.plot(HD3_Fs_m11, -40*np.ones(len(HD3_Fs_m11)), color='lawngreen', marker='^', linestyle='--')
+    ax2.plot(HD3_Fs_m12, -40*np.ones(len(HD3_Fs_m12)), color='lawngreen', marker='^', linestyle='--')
+    ax2.plot(HD3_Fs_m13, -40*np.ones(len(HD3_Fs_m13)), color='lawngreen', marker='^', linestyle='--')
+    ax2.plot(HD3_Fs_m14, -40 * np.ones(len(HD3_Fs_m14)), color='lawngreen', marker='^', linestyle='--')
+    if 0 < (np.min(HD3) + np.max(HD3)) / 2 < 2 * Fs:
+        ax2.text((np.min(HD3) + np.max(HD3)) / 2, -40, 'HD3', ha='center', va='bottom', fontsize=10)
+        if -1*BW_Span < (np.min(HD3) + np.max(HD3)) / 2 - FC < BW_Span:
+            print('center of HD3 frequency is ', (np.min(HD3) + np.max(HD3)) / 2, 'MHz')
+            print('Offset FC is', (np.min(HD3) + np.max(HD3)) / 2 - FC, 'MHz')
+
+    if 0 < (np.min(HD3_Fs_11) + np.max(HD3_Fs_11))/ 2 < 2 * Fs:
+        ax2.text((np.min(HD3_Fs_11) + np.max(HD3_Fs_11)) / 2, -40, 'Fs+HD3', ha='center', va='bottom', fontsize=10)
+        if -1*BW_Span < (np.min(HD3_Fs_11) + np.max(HD3_Fs_11))/2 - FC < BW_Span:
+            print('center of Fs+HD3 frequency is ', (np.min(HD3_Fs_11) + np.max(HD3_Fs_11))/2, 'MHz')
+            print('Offset FC is', (np.min(HD3_Fs_11) + np.max(HD3_Fs_11))/ 2 - FC, 'MHz')
+
+    if 0 < (np.min(HD3_Fs_1m1) + np.max(HD3_Fs_1m1)) / 2 < 2 * Fs:
+        ax2.text((np.min(HD3_Fs_1m1) + np.max(HD3_Fs_1m1)) / 2, -40, 'HD3-Fs', ha='center', va='bottom', fontsize=10)
+        if -1*BW_Span < (np.min(HD3_Fs_1m1) + np.max(HD3_Fs_1m1)) / 2 - FC < BW_Span:
+            print('center of HD3-Fs frequency is ', (np.min(HD3_Fs_1m1) + np.max(HD3_Fs_1m1)) / 2, 'MHz')
+            print('Offset FC is', (np.min(HD3_Fs_1m1) + np.max(HD3_Fs_1m1)) / 2 - FC, 'MHz')
+
+    if 0 < (np.min(HD3_Fs_1m2) + np.max(HD3_Fs_1m2)) / 2 < 2 * Fs:
+        ax2.text((np.min(HD3_Fs_1m2) + np.max(HD3_Fs_1m2)) / 2, -40, 'HD3-2Fs', ha='center', va='bottom', fontsize=10)
+        if -1*BW_Span < (np.min(HD3_Fs_1m2) + np.max(HD3_Fs_1m2)) / 2 - FC < BW_Span:
+            print('center of HD3-2Fs frequency is ', (np.min(HD3_Fs_1m2) + np.max(HD3_Fs_1m2)) / 2, 'MHz')
+            print ('Offset FC is', (np.min(HD3_Fs_1m2) + np.max(HD3_Fs_1m2)) / 2 - FC, 'MHz')
+
+    if 0 < (np.min(HD3_Fs_m11) + np.max(HD3_Fs_m11)) / 2 < 2 * Fs:
+        ax2.text((np.min(HD3_Fs_m11) + np.max(HD3_Fs_m11)) / 2, -40, 'Fs-HD3', ha='center', va='bottom', fontsize=10)
+        if -1*BW_Span < (np.min(HD3_Fs_m11) + np.max(HD3_Fs_m11)) / 2 - FC < BW_Span:
+            print('center of Fs-HD3 frequency is ', (np.min(HD3_Fs_m11) + np.max(HD3_Fs_m11)) / 2, 'MHz')
+            print ('Offset FC is', (np.min(HD3_Fs_m11) + np.max(HD3_Fs_m11)) / 2 - FC, 'MHz')
+
+    if 0 < (np.min(HD3_Fs_m12) + np.max(HD3_Fs_m12)) / 2 < 2 * Fs:
+        ax2.text((np.min(HD3_Fs_m12) + np.max(HD3_Fs_m12)) / 2, -40, '2Fs-HD3', ha='center', va='bottom', fontsize=10)
+        if -1*BW_Span < (np.min(HD3_Fs_m12) + np.max(HD3_Fs_m12)) / 2 - FC < BW_Span:
+            print('center of 2Fs-HD3 frequency is ', (np.min(HD3_Fs_m12) + np.max(HD3_Fs_m12)) / 2, 'MHz')
+            print('Offset FC is', (np.min(HD3_Fs_m12) + np.max(HD3_Fs_m12)) / 2 - FC, 'MHz')
+
+    if 0 < (np.min(HD3_Fs_m13) + np.max(HD3_Fs_m13)) / 2 < 2 * Fs:
+        ax2.text((np.min(HD3_Fs_m13) + np.max(HD3_Fs_m13)) / 2, -40, '3Fs-HD3', ha='center', va='bottom', fontsize=10)
+        if -1*BW_Span <(np.min(HD3_Fs_m13) + np.max(HD3_Fs_m13)) / 2 - FC < BW_Span:
+            print('center of 3Fs-HD3 frequency is ', (np.min(HD3_Fs_m13) + np.max(HD3_Fs_m13)) / 2 , 'MHz')
+            print('Offset FC is', (np.min(HD3_Fs_m13) + np.max(HD3_Fs_m13)) / 2 - FC, 'MHz')
+
+    if 0 < (np.min(HD3_Fs_m14) + np.max(HD3_Fs_m14)) / 2 < 2 * Fs:
+        ax2.text((np.min(HD3_Fs_m14) + np.max(HD3_Fs_m14)) / 2, -40, '4Fs-HD3', ha='center', va='bottom', fontsize=10)
+        if -1*BW_Span <(np.min(HD3_Fs_m14) + np.max(HD3_Fs_m14)) / 2 - FC < BW_Span:
+            print('center of 4Fs-HD3 frequency is ', (np.min(HD3_Fs_m14) + np.max(HD3_Fs_m14)) / 2, 'MHz')
+            print ('Offset FC is', (np.min(HD3_Fs_m14) + np.max(HD3_Fs_m14)) / 2 - FC, 'MHz')
+
+plt.savefig("DAC Output Spectrum")
+plt.show()
