@@ -1,0 +1,374 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
+
+Fc_array = np.array([(617+894)/2, (2110-70+2360+10)/2, (2690+2496)/2, (703+733)/2, (832+862)/2, (880+915)/2, (1710+1785)/2, (1920+1980)/2, (2500+2570)/2])
+# FC = Fc_array[1]
+# #BW = 894-617+70
+# BW = 2360+10-2110+70
+# #BW = (2690-2496)
+# Fs = 2949.12
+
+# FC = (3670+3300)/2
+
+# FC = (6400+6800)/2
+# BW = 400*4
+# Fs = 2456
+# FC = (3600+2500)/2
+# BW = 1100
+
+Fs = 2949.12
+FC = 3686.4
+BW = 1
+
+# Fs = 5898.24
+
+# BW = 400
+# Fs = 2949.12
+
+# Fs = 4915.2
+# Fs = 4423.68
+# FC = (4500+4600)/2
+# BW = 400
+# Fs = 3932.16
+
+# FC = 3500
+# BW = 280
+# Fs = 4915.2
+#
+# FC = 4915.2
+# BW = 1200
+# Fs = 4423.68
+
+# DT ORx
+# FC = (1830+2165)/2
+# BW = 600
+
+# DT Rx
+# FC = (1735+1975)/2
+# BW = 250
+
+# Comba
+# FC = (4400+5000)/2
+# BW = 600
+# Fs = 1966.08
+
+# Fs = 3932.16
+# FC = 3800
+# BW = 800
+# FC = (3300+3600)/2
+
+# FC =(1710+1785)/2
+# BW = (1785-1710)*3
+
+# FC =(1980+1920)/2
+# BW = (1980-1920)*3
+
+# # FC = 3500
+# BW = 1
+# FC = 4900
+# FC = 6025
+# BW = 60
+# FC = 4000.48
+# FC = 3790
+# Fs = 2211.84
+# Fs = 3932.16
+# Fs = 3686.4
+
+# FC = (1710+1785)/2
+# FC = 3500
+# # FC = 2350
+# BW = 75*3
+# FC = 3450
+# FC = 4900
+# FC = (3780+3980)/2
+# FC =(3450+4050)/2
+# BW = 4050-3450
+# FC = (3
+# # Fs = 5898.24300+3600)/2
+# FC = 7372.8
+# BW = 800
+
+# FC = (4800+4960)/2
+# FC = (3700+4100)/2
+# FC = (2515+2675)/2
+#  FC = (1655+2030)/2  #B3
+#  FC = (2220+2470)/2 #B40
+
+# FC = (2515+2675)/2
+# FC = 4960
+# FC = 3450
+# BW = 2
+# BW = 400
+# Fs = 4915.2
+# FC = (3300+3700)/2
+# Fs = 4423.68
+# Fs = 4915.2
+# Fs = 5900
+# Fs = 4423.68
+# Fs = 3686.4
+#
+# FC = 4650
+# BW = 200
+# Fs = 1966.08
+# Fs = 1966.08
+# FC = 1800
+# BW = 1
+# FC = 4950
+
+# FC = (4800+4980)/2
+# FC = 2595
+# BW = 600
+# Fs = 4423.68
+# Fs = 2457.6
+
+# FC = 3300
+# BW = 800
+# Fs = 4423
+
+Harmonics_analysis_enable = 1
+
+f = np.arange(0.01, 6 * Fs, 0.01 * Fs)
+y = np.arange(0, 1.8, 0.2)
+NyquistZone = np.arange(0.01, 2.01, 0.01)
+fc_band = np.arange(FC - BW / 2, FC + BW / 2 + 0.01 * BW, 0.1 * BW)
+Amplitude = np.array(
+    [2 - 0.39, 2 - 0.39, 2 - 0.39, 2 - 0.39, 2 - 0.39, 2 - 0.39, 2 - 0.39, 2 - 0.39, 2 - 0.39, 2 - 0.39, 2 - 0.39])
+
+plt.figure(figsize=(18, 6))
+plt.ylabel("Images")
+plt.xlabel("Frequency(MHz)")
+plt.xlim(0, 6 * Fs / 2)
+plt.ylim(0, 2)
+plt.title("ADC images aliasing chart")
+
+if FC < Fs / 2:
+    Aliasing_Band_1 = np.arange(Fs - (FC + BW / 2), Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_2 = np.arange(Fs + (FC - BW / 2), Fs + (FC + BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_3 = np.arange(2 * Fs - (FC + BW / 2), 2 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_4 = np.arange(2 * Fs + (FC - BW / 2), 2 * Fs + (FC + BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_5 = np.arange(3 * Fs - (FC + BW / 2), 3 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_6 = np.arange(3 * Fs + (FC - BW / 2), 3 * Fs + (FC + BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_7 = np.arange(4 * Fs - (FC + BW / 2), 4 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_8 = np.arange(4 * Fs + (FC - BW / 2), 4 * Fs + (FC + BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_9 = np.arange(5 * Fs - (FC + BW / 2), 5 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_10 = np.arange(5 * Fs + (FC - BW / 2), 5 * Fs + (FC + BW / 2) + 0.01 * BW, 0.1 * BW)
+
+elif Fs / 2 < FC < Fs:
+    Aliasing_Band_1 = np.arange(Fs - (FC + BW / 2), Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_2 = np.arange(2 * Fs - (FC + BW / 2), 2 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_3 = np.arange(Fs + (FC - BW / 2), Fs + (FC + BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_4 = np.arange(3 * Fs - (FC + BW / 2), 3 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_5 = np.arange(2 * Fs + (FC - BW / 2), 2 * Fs + (FC + BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_6 = np.arange(4 * Fs - (FC + BW / 2), 4 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_7 = np.arange(3 * Fs + (FC - BW / 2), 3 * Fs + (FC + BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_8 = np.arange(5 * Fs - (FC + BW / 2), 5 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_9 = np.arange(4 * Fs + (FC - BW / 2), 4 * Fs + (FC + BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_10 = np.arange(6 * Fs - (FC + BW / 2), 6 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+
+elif Fs < FC < 3 * Fs / 2:
+    Aliasing_Band_1 = np.arange((FC - BW / 2) - Fs, (FC + BW / 2) - Fs + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_2 = np.arange(2 * Fs - (FC + BW / 2), 2 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_3 = np.arange(3 * Fs - (FC + BW / 2), 3 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_4 = np.arange((FC - BW / 2) + Fs, (FC + BW / 2) + Fs + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_5 = np.arange(4 * Fs - (FC + BW / 2), 4 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_6 = np.arange((FC - BW / 2) + 2 * Fs, (FC + BW / 2) + 2 * Fs + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_7 = np.arange(5 * Fs - (FC + BW / 2), 5 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_8 = np.arange((FC - BW / 2) + 3 * Fs, (FC + BW / 2) + 3 * Fs + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_9 = np.arange(6 * Fs - (FC + BW / 2), 6 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_10 = np.arange((FC - BW / 2) + 4 * Fs, (FC + BW / 2) + 4 * Fs + 0.01 * BW, 0.1 * BW)
+
+elif 3 * Fs / 2 < FC < 2 * Fs:
+    Aliasing_Band_1 = np.arange(2 * Fs - (FC + BW / 2), 2 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_2 = np.arange((FC - BW / 2) - Fs, (FC + BW / 2) - Fs + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_3 = np.arange(3 * Fs - (FC + BW / 2), 3 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_4 = np.arange(4 * Fs - (FC + BW / 2), 4 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_5 = np.arange((FC - BW / 2) + Fs, (FC + BW / 2) + Fs + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_6 = np.arange(5 * Fs - (FC + BW / 2), 5 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_7 = np.arange((FC - BW / 2) + 2 * Fs, (FC + BW / 2) + 2 * Fs + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_8 = np.arange(6 * Fs - (FC + BW / 2), 6 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_9 = np.arange((FC - BW / 2) + 3 * Fs, (FC + BW / 2) + 3 * Fs + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_10 = np.arange(7 * Fs - (FC + BW / 2), 7 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+
+elif 2 * Fs < FC < 5 * Fs / 2:
+    Aliasing_Band_1 = np.arange((FC - BW / 2) - 2 * Fs, (FC + BW / 2) - 2 * Fs + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_2 = np.arange(3 * Fs - (FC + BW / 2), 3 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_3 = np.arange((FC - BW / 2) - Fs, (FC + BW / 2) - Fs + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_4 = np.arange(4 * Fs - (FC + BW / 2), 4 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_5 = np.arange(5 * Fs - (FC + BW / 2), 5 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_6 = np.arange((FC - BW / 2) + Fs, (FC + BW / 2) + Fs + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_7 = np.arange(6 * Fs - (FC + BW / 2), 6 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_8 = np.arange((FC - BW / 2) + 2 * Fs, (FC + BW / 2) + 2 * Fs + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_9 = np.arange(7 * Fs - (FC + BW / 2), 7 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_10 = np.arange((FC - BW / 2) + 3 * Fs, (FC + BW / 2) + 3 * Fs + 0.01 * BW, 0.1 * BW)
+
+elif 5 * Fs / 2 < FC < 3 * Fs:
+    Aliasing_Band_1 = np.arange(3 * Fs - (FC + BW / 2), 3 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_2 = np.arange((FC - BW / 2) - 2 * Fs, (FC + BW / 2) - 2 * Fs + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_3 = np.arange(4 * Fs - (FC + BW / 2), 4 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_4 = np.arange((FC - BW / 2) - Fs, (FC + BW / 2) - Fs + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_5 = np.arange(5 * Fs - (FC + BW / 2), 5 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_6 = np.arange(6 * Fs - (FC + BW / 2), 6 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_7 = np.arange((FC - BW / 2) + Fs, (FC + BW / 2) + Fs + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_8 = np.arange(7 * Fs - (FC + BW / 2), 7 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_9 = np.arange((FC - BW / 2) + 2 * Fs, (FC + BW / 2) + 2 * Fs + 0.01 * BW, 0.1 * BW)
+    Aliasing_Band_10 = np.arange(8 * Fs - (FC + BW / 2), 8 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+
+else:
+    print('RF band frequency > 3*Fs')
+
+plt.plot(Fs / 2 * NyquistZone / NyquistZone, NyquistZone, color='gold', linestyle='-.')
+plt.plot(2 * Fs / 2 * NyquistZone / NyquistZone, NyquistZone, color='brown', linestyle='-.')
+plt.plot(3 * Fs / 2 * NyquistZone / NyquistZone, NyquistZone, color='gold', linestyle='-.')
+plt.plot(4 * Fs / 2 * NyquistZone / NyquistZone, NyquistZone, color='brown', linestyle='-.')
+plt.plot(5 * Fs / 2 * NyquistZone / NyquistZone, NyquistZone, color='gold', linestyle='-.')
+# plt.plot(6 * Fs / 2 * NyquistZone / NyquistZone, NyquistZone, color='brown', linestyle='-.')
+#plt.plot(7 * Fs / 2 * NyquistZone / NyquistZone, NyquistZone, color='gold', linestyle=':')
+# plt.plot(8*Fs/2*NyquistZone/NyquistZone, NyquistZone, color='brown', linestyle='-.', label='NyquistZone8')
+
+plt.plot((FC - BW / 2) *np.ones(len(y)), y, color='blue')
+plt.plot((FC + BW / 2) *np.ones(len(y)), y, color='blue')
+plt.plot(fc_band, Amplitude, color='blue', label='RF Signal Band')
+
+plt.plot(np.min(Aliasing_Band_1) * np.ones(len(y)), y, color='red', linestyle='--')
+plt.plot(np.max(Aliasing_Band_1) * np.ones(len(y)), y, color='red', linestyle='--')
+plt.plot(Aliasing_Band_1, Amplitude, color='red', linestyle='--',label='Images Aliasing Band')
+plt.plot(np.min(Aliasing_Band_2) * np.ones(len(y)), y, color='red', linestyle='--')
+plt.plot(np.max(Aliasing_Band_2) * np.ones(len(y)), y, color='red', linestyle='--')
+plt.plot(Aliasing_Band_2, Amplitude, color='red', linestyle='--')
+plt.plot(np.min(Aliasing_Band_3) * np.ones(len(y)), y, color='red', linestyle='--')
+plt.plot(np.max(Aliasing_Band_3) * np.ones(len(y)), y, color='red', linestyle='--')
+plt.plot(Aliasing_Band_3, Amplitude, color='red', linestyle='--')
+plt.plot(np.min(Aliasing_Band_4) * np.ones(len(y)), y, color='red', linestyle='--')
+plt.plot(np.max(Aliasing_Band_4) * np.ones(len(y)), y, color='red', linestyle='--')
+plt.plot(Aliasing_Band_4, Amplitude, color='red', linestyle='--')
+plt.plot(np.min(Aliasing_Band_5) * np.ones(len(y)), y, color='red', linestyle='--')
+plt.plot(np.max(Aliasing_Band_5) * np.ones(len(y)), y, color='red', linestyle='--')
+plt.plot(Aliasing_Band_5, Amplitude, color='red', linestyle='--')
+# plt.plot(np.min(Aliasing_Band_6) * y / y, y, color='red', linestyle='--')
+# plt.plot(np.max(Aliasing_Band_6) * y / y, y, color='red', linestyle='--')
+# plt.plot(Aliasing_Band_6, Amplitude, color='red', linestyle='--')
+if BW > 1 / 50 * Fs:
+    my_xticks = np.array([Fs / 2, Fs, 3 * Fs / 2, 2 * Fs, 5 * Fs / 2, 3 * Fs, np.min(Aliasing_Band_1), np.max(Aliasing_Band_1),
+                          np.min(Aliasing_Band_2), np.max(Aliasing_Band_2), np.min(Aliasing_Band_3), np.max(Aliasing_Band_3),
+                          np.min(Aliasing_Band_4), np.max(Aliasing_Band_4), np.min(Aliasing_Band_5), np.max(Aliasing_Band_5),
+                          FC - BW / 2, FC + BW / 2])
+else:
+    my_xticks = np.array([Fs / 2, Fs, 3 * Fs / 2, 2 * Fs, 5 * Fs / 2, 3 * Fs, (np.min(Aliasing_Band_1)+np.max(Aliasing_Band_1))/2,
+                          (np.min (Aliasing_Band_2) + np.max (Aliasing_Band_2)) / 2,
+                          (np.min (Aliasing_Band_3) + np.max (Aliasing_Band_3)) / 2,
+                          (np.min (Aliasing_Band_4) + np.max (Aliasing_Band_4)) / 2,
+                          (np.min (Aliasing_Band_5) + np.max (Aliasing_Band_5)) / 2, FC])
+
+my_xticks_round = np.around(my_xticks, decimals=2)
+print(my_xticks_round)
+if FC < Fs / 2:
+    NCO_centerPoint=FC
+else:
+    NCO_centerPoint = np.around((np.min(Aliasing_Band_1) + np.max(Aliasing_Band_1))/2, decimals=2)
+print('The center frequency in Nyquist Zone1 = ', NCO_centerPoint)
+plt.xticks(my_xticks_round)
+plt.gca().xaxis.set_major_formatter (ticker.FormatStrFormatter('%.2f'))
+plt.xticks(rotation=45)
+
+plt.savefig("ADC images aliasing chart")
+plt.legend(loc='upper right', fontsize=10)  # label location
+plt.show()
+
+if Harmonics_analysis_enable == 1:
+    plt.figure (figsize=(10, 6))
+    plt.ylabel ("Harmonics")
+    plt.xlabel ("Frequency(MHz)")
+    plt.xlim (0, Fs / 2)
+    plt.ylim (0, 2)
+    plt.title ("Harmonics Analysis")
+    plt.yticks([0.2, 0.4], ['HD2', 'HD3'])
+    plt.ylabel('Harmonics Location', fontsize=12)
+    if FC < Fs / 2:
+        Digitalized_Band_in_Zone1 = np.arange ((FC - BW / 2), (FC + BW / 2) + 0.01 * BW, 0.1 * BW)
+        HD2_low = np.arange (2 * (FC - BW / 2), 2 * (FC + BW / 2) + 0.01 * BW, 0.4 * BW)
+        HD2_high = np.arange (Fs - 2 * (FC + BW / 2), Fs - 2 * (FC - BW / 2) + 0.01 * BW, 0.4 * BW)
+        plt.plot (HD2_low, 0.2 * np.ones (len (HD2_low)), color='lightseagreen', marker='o', linestyle='--',
+                  label='HD2')
+        plt.plot (HD2_high, 0.2 * np.ones (len (HD2_high)), color='lightseagreen', marker='o',
+                  linestyle='--')
+    elif Fs / 2 < FC < Fs:
+        Digitalized_Band_in_Zone1 = np.arange (Fs - (FC + BW / 2), Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+        HD2_low = np.arange (2 * (FC - BW / 2) - Fs, 2 * (FC + BW / 2) - Fs + 0.01 * BW, 0.4 * BW)
+        HD2_high = np.arange (2 * Fs - 2 * (FC + BW / 2), 2 * Fs - 2 * (FC - BW / 2) + 0.01 * BW, 0.4 * BW)
+        plt.plot(HD2_low, 0.2 * np.ones(len(HD2_low)), color='lightseagreen', marker='o', linestyle='--',label='HD2')
+        plt.plot(HD2_high, 0.2 * np.ones(len(HD2_high)), color='lightseagreen', marker='o',
+                  linestyle='--')
+    elif Fs < FC < 3 * Fs / 2:
+        Digitalized_Band_in_Zone1 = np.arange ((FC - BW / 2)-Fs, (FC + BW / 2) -Fs + 0.01 * BW, 0.1 * BW)
+        HD2_low = np.arange (2 * (FC - BW / 2) - 2 * Fs, 2 * (FC + BW / 2) - 2 * Fs + 0.01 * BW, 0.4 * BW)
+        HD2_high = np.arange (3 * Fs - 2 * (FC + BW / 2), 3 * Fs - 2 * (FC - BW / 2) + 0.01 * BW, 0.4 * BW)
+        plt.plot (HD2_low, 0.2 * np.ones (len (HD2_low)), color='lightseagreen', marker='o', linestyle='--',label='HD2')
+        plt.plot (HD2_high, 0.2 * np.ones (len (HD2_high)), color='lightseagreen', marker='o',
+                  linestyle='--')
+    elif 3 * Fs / 2 < FC < 2 * Fs:
+        Digitalized_Band_in_Zone1 = np.arange (2*Fs - (FC + BW / 2), 2*Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+        HD2_low = np.arange (2 * (FC - BW / 2) - 3 * Fs, 2 * (FC + BW / 2) - 3 * Fs + 0.01 * BW, 0.4 * BW)
+        HD2_high = np.arange (4 * Fs - 2 * (FC + BW / 2), 4 * Fs - 2 * (FC - BW / 2) + 0.01 * BW, 0.4 * BW)
+        plt.plot (HD2_low, 0.2 * np.ones (len (HD2_low)), color='lightseagreen', marker='o', linestyle='--',label='HD2')
+        plt.plot (HD2_high, 0.2 * np.ones (len (HD2_high)), color='lightseagreen', marker='o',
+                  linestyle='--')
+    elif 2 * Fs < FC < 5 * Fs / 2:
+        Digitalized_Band_in_Zone1 = np.arange ((FC - BW / 2) - 2*Fs, (FC + BW / 2) - 2*Fs + 0.01 * BW, 0.1 * BW)
+        HD2_low = np.arange (2 * (FC - BW / 2) - 4 * Fs, 2 * (FC + BW / 2) - 4 * Fs + 0.01 * BW, 0.4 * BW)
+        HD2_high = np.arange (5 * Fs - 2 * (FC + BW / 2), 5 * Fs - 2 * (FC - BW / 2) + 0.01 * BW, 0.4 * BW)
+        plt.plot (HD2_low, 0.2 * np.ones (len (HD2_low)), color='lightseagreen', marker='o', linestyle='--',label='HD2')
+        plt.plot (HD2_high, 0.2 * np.ones (len (HD2_high)), color='lightseagreen', marker='o',
+                  linestyle='--')
+    elif 5 * Fs / 2 < FC < 3 * Fs:
+        Digitalized_Band_in_Zone1 = np.arange (3 * Fs - (FC + BW / 2), 3 * Fs - (FC - BW / 2) + 0.01 * BW, 0.1 * BW)
+        HD2_low = np.arange (2 * (FC - BW / 2) - 5 * Fs, 2 * (FC + BW / 2) - 5 * Fs + 0.01 * BW, 0.4 * BW)
+        HD2_high = np.arange (6 * Fs - 2 * (FC + BW / 2), 6* Fs - 2 * (FC - BW / 2) + 0.01 * BW, 0.4 * BW)
+        plt.plot (HD2_low, 0.2 * np.ones (len (HD2_low)), color='lightseagreen', marker='o', linestyle='--',label='HD2')
+        plt.plot (HD2_high, 0.2 * np.ones (len (HD2_high)), color='lightseagreen', marker='o',
+                  linestyle='--')
+    else:
+        print ('RF band frequency > 3*Fs, exceed the analysis range')
+    if 0 < (np.min (HD2_low) + np.max (HD2_low)) / 2 < Fs/2:
+        plt.text ((np.min (HD2_low) + np.max (HD2_low)) / 2, 0.2, 'HD2', ha='center', va='bottom', fontsize=10)
+    if 0 < (np.min (HD2_high) + np.max (HD2_high)) / 2 < Fs / 2:
+        plt.text ((np.min (HD2_high) + np.max (HD2_high)) / 2, 0.2, 'HD2', ha='center', va='bottom', fontsize=10)
+
+    def HD3_F(n):
+        HD3_l = np.arange(3*(FC - BW / 2) - n*Fs, 3*(FC + BW / 2) - n*Fs + 0.001 * BW, 0.05 * BW)
+        HD3_H = np.arange(n * Fs-3 * (FC + BW / 2), n * Fs-3*(FC - BW / 2) + 0.001 * BW, 0.05 * BW)
+        HD3_LH = np.hstack((HD3_l, HD3_H))
+        return HD3_LH
+
+    HD3 = np.hstack((HD3_F(0), HD3_F(1), HD3_F(2), HD3_F(3), HD3_F(4), HD3_F(5), HD3_F(6), HD3_F(7), HD3_F(8), HD3_F(9), HD3_F(10)))
+    HD3_Zone1 = np.array([])
+    for i in range(len(HD3)):
+        if -0.05 * BW < HD3[i] < Fs/2+0.05 * BW:
+            HD3_Zone1 = np.hstack((HD3_Zone1, HD3[i]))
+
+    plt.plot(HD3_Zone1, 0.4*np.ones(len(HD3_Zone1)), color='lawngreen', marker='^', linestyle='--',label='HD3')
+    plt.text ((np.min (HD3_Zone1) + np.max (HD3_Zone1)) / 2, 0.4, 'HD3', ha='center', va='bottom', fontsize=10)
+
+    plt.plot(np.min(Digitalized_Band_in_Zone1)*np.ones(len(y)), y, color='blue')
+    plt.plot(np.max(Digitalized_Band_in_Zone1)*np.ones(len(y)), y, color='blue')
+    plt.plot(Digitalized_Band_in_Zone1, Amplitude, color='blue', label='Digitalized_Band')
+
+    if BW > 1 / 50 * Fs:
+        my_xticks2 = np.array ([Fs / 2, np.min(Digitalized_Band_in_Zone1), np.max(Digitalized_Band_in_Zone1),
+                               (np.min(Digitalized_Band_in_Zone1)+np.max(Digitalized_Band_in_Zone1))/2])
+    else:
+        if 0 < (np.min (HD2_low) + np.max (HD2_low)) / 2 < Fs / 2:
+            my_xticks2 = np.array (
+                [Fs / 2, (np.min (Digitalized_Band_in_Zone1) + np.max (Digitalized_Band_in_Zone1)) / 2,
+                 (np.min (HD3_Zone1) + np.max (HD3_Zone1)) / 2, (np.min (HD2_low) + np.max (HD2_low)) / 2])
+        if 0 < (np.min (HD2_high) + np.max (HD2_high)) / 2 < Fs / 2:
+            my_xticks2 = np.array (
+                [Fs / 2, (np.min (Digitalized_Band_in_Zone1) + np.max (Digitalized_Band_in_Zone1)) / 2,
+                 (np.min (HD3_Zone1) + np.max (HD3_Zone1)) / 2, (np.min (HD2_high) + np.max (HD2_high)) / 2])
+
+    plt.xticks (my_xticks2)
+    plt.gca ().xaxis.set_major_formatter (ticker.FormatStrFormatter('%.2f'))
+    plt.xticks (rotation=45)
+    plt.savefig("ADC HD analysis")
+    plt.legend(loc='upper right', fontsize=10)  # label location
+    plt.show()
